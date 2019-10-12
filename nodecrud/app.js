@@ -9,7 +9,7 @@ const bodyParser = require('body-parser');
 const connection = mysql.createConnection({
   host: 'localhost',
   user: 'root',
-  password: 'password',
+  password: 'mangoo8@',
   database: 'word',
   port: '3306',
 });
@@ -19,6 +19,8 @@ const app = express();
 app.use(bodyParser.urlencoded({
   extended: false,
 }));
+//app.use(express.static(__dirname + '/static'));
+
 
 app.listen(3000, () => {
   console.log('Server is running port 3000!');
@@ -27,7 +29,7 @@ app.listen(3000, () => {
 });
 
 
-/*
+
 //소켓서버
 var conf = { 
     port: 8888,
@@ -47,6 +49,10 @@ var express2 = require('express'),
 var app2 = express2(),
     server = http.createServer(app2);
     server.listen(conf.port);
+
+// Express app configuration
+//app2.use(express2.bodyParser());
+app2.use(express2.static(__dirname + '/static'));
 
 var io = require('socket.io')(server);
 var redis = require('socket.io-redis');
@@ -77,10 +83,6 @@ var sendBroadcast = function(text) {
     logger.emit('newEvent', 'newBroadcastMessage', {'msg':text});
 };
 
-// Welcome message
-app2.get('/chat', function(req, res) {
-    res.send(200, "Welcome to chat server");
-});
 
 // Broadcast message to all connected users
 app2.post('/api/broadcast/', requireAuthentication, function(req, res) {
@@ -91,10 +93,11 @@ app2.post('/api/broadcast/', requireAuthentication, function(req, res) {
 // ***************************************************************************
 // Socket.io events
 // ***************************************************************************
+var usercount = 1;
 
 //client 커넥션 시도.
 io.sockets.on('connection', function(socket) {
-
+	var usernick = 'user'+usercount++;
     // Welcome message on connection
     socket.emit('connected', 'Welcome to the chat server');
     logger.emit('newEvent', 'userConnected', {'socket':socket.id});
@@ -102,15 +105,18 @@ io.sockets.on('connection', function(socket) {
     // Store user data in db
     db.hset([socket.id, 'connectionDate', new Date()], redis.print);
     db.hset([socket.id, 'socketID', socket.id], redis.print);
-    db.hset([socket.id, 'username', 'anonymous'], redis.print);
+    db.hset([socket.id, 'username', usernick], redis.print);
 
+	
     // Join user to 'MainRoom'
     socket.join(conf.mainroom);
     logger.emit('newEvent', 'userJoinsRoom', {'socket':socket.id, 'room':conf.mainroom});
     // Confirm subscription to user
     socket.emit('subscriptionConfirmed', {'room':conf.mainroom});
+
+	console.log(socket.id);
     // Notify subscription to all users in room
-    var data = {'room':conf.mainroom, 'username':'anonymous', 'msg':'----- Joined the room -----', 'id':socket.id};
+    var data = {'room':conf.mainroom, 'username':usernick, 'msg':'----- Joined the room -----', 'id':socket.id};
     io.to(conf.mainroom).emit('userJoinsRoom', data);
 
     // User wants to subscribe to [data.rooms]
@@ -168,7 +174,8 @@ io.sockets.on('connection', function(socket) {
         var socketsInRoom = _.keys(io.nsps['/'].adapter.rooms[data.room]);
         for (var i=0; i<socketsInRoom.length; i++) {
             db.hgetall(socketsInRoom[i], function(err, obj) {
-                usersInRoom.push({'room':data.room, 'username':obj.username, 'id':obj.socketID});
+				usersInRoom.push({'room':data.room, 'username':data.username, 'id':data.socketID});
+                //usersInRoom.push({'room':data.room, 'username':obj.username, 'id':obj.socketID});
                 // When we've finished with the last one, notify user
                 if (usersInRoom.length == socketsInRoom.length) {
                     socket.emit('usersInRoom', {'users':usersInRoom});
@@ -191,6 +198,7 @@ io.sockets.on('connection', function(socket) {
                 if (room) {
                     var info = {'room':room, 'oldUsername':username, 'newUsername':data.username, 'id':socket.id};
                     io.to(room).emit('userNicknameUpdated', info);
+					console.log('userNicknameUpdated', info);
                 }
             });
         });
@@ -199,6 +207,7 @@ io.sockets.on('connection', function(socket) {
     // New message sent to group
     socket.on('newMessage', function(data) {
 		//alert(data);
+		console.log('newMessage',data);
         db.hgetall(socket.id, function(err, obj) {
             if (err) return logger.emit('newEvent', 'error', err);
             // Check if user is subscribed to room before sending his message
@@ -236,7 +245,7 @@ io.sockets.on('connection', function(socket) {
         db.del(socket.id, redis.print);
     });
 });
-*/
+
 
 // 데이터 조회
 app.get('/', (request, response) => {

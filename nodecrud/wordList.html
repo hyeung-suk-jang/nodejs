@@ -3,10 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <title>word list</title>
+<style>
+.flex_container {
+  display: flex;
+  flex-direction: row;
+}
+.flex_item {
+  flex: 1; /* flex: 1 1 0 */
+  overflow: auto;
+}
+</style>
 </head>
 <body>
 <h1>Word Lists</h1>
-<hr />
+<div class="flex_container">
+<div class="flex_item">
 <table width="100%" border="1">
     <tr>
         <th>영단어</th>
@@ -23,29 +34,14 @@
     </tr>
     <% }); %>
 </table>
+</div>
+<div class="flex_item">
+<iframe src="http://localhost:8888/" width="100%" height="600">
+</div>
+</div>
 <hr/>
 <form action="/create" method="get">
     <button type="submit">CREATE</button>
 </form>
-<input type="button" value="채팅참여하기" id="gochatting">
-<script src="/socket.io/socket.io.js"></script>
-<script>
-document.getElementById("gochatting").addEventListener("click",function(){
-	//서버소켓연결.
-	var socket = io.connect(window.location.host);
-    socket.on('connected', function (data) {
-        console.log(data);
-        socket.emit('subscribe', {'username':'tegioz', 'rooms':['pruebas']});
-        socket.emit('newMessage', {'room':'pruebas', 'msg':'Holaaaaaa'});
-    });
-    socket.on('newMessage', function (data) {
-        console.log("newMessage: %s", JSON.stringify(data));
-    });
-    setInterval(function() {
-        socket.emit('unsubscribe', {'rooms':['pruebas']});
-        socket.disconnect();
-    }, 600000);
-});
-</script>
 </body>
 </html>
