@@ -15,7 +15,6 @@ models.sequelize.sync().then(() => {
 
 //익스프레스 객체 생성
 const app = express();
-//var router = express.Router();
 
 function configApp() {
     app.use(express.json());

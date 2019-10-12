@@ -9,7 +9,8 @@ var express = require('express');
 
 module.exports.routes = function(app) {
   var PREFIX = '/api';
-
+	
+	//라우터 설정.
   app.use(PREFIX + '/test', test);
   app.use(PREFIX + '/login', login);
   app.use(PREFIX + '/signup', signup);

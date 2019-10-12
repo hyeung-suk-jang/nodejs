@@ -4,6 +4,7 @@ var router = express.Router();
 var bcrypt = require('bcryptjs');
 
 router.route('/').post(function (req, res, next) {
+	console.log('login call');
     const user_email = req.body.user_email;
     const user_pw = req.body.user_pw;
     models.tb_user_info.findOne({
