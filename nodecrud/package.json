@@ -1,0 +1,32 @@
+{
+  "name": "nodecrud",
+  "version": "1.0.0",
+  "description": "teamcoding",
+  "main": "app.js",
+  "dependencies": {
+    "ejs": "^2.7.1",
+    "express": "^4.17.1",
+    "mysql": "^2.17.1",
+    "redis": "^2.8.0",
+    "socket.io": "^2.3.0",
+    "socket.io-redis": "^5.2.0",
+    "underscore": "^1.9.1",
+    "validator": "^11.1.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.6.0",
+    "@babel/preset-env": "^7.6.0",
+    "babel-cli": "^6.26.0",
+    "babel-core": "^6.26.3",
+    "babel-preset-es2015": "^6.24.1"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app"
+  },
+  "presets": [
+    "@babel/preset-env"
+  ],
+  "author": "",
+  "license": "ISC"
+}

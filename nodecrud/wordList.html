@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>word list</title>
+</head>
+<body>
+<h1>Word Lists</h1>
+<hr />
+<table width="100%" border="1">
+    <tr>
+        <th>영단어</th>
+        <th>단어뜻</th>
+        <th>MODIFY</th>
+        <th>DELETE</th>
+    </tr>
+    <% data.forEach(function (word, index) { %>
+    <tr>
+        <td><%= word.eng %></td>
+        <td><%= word.kor %></td>
+        <td><a href="/modify/<%= word.idx %>">MODIFY</a></button></td>
+        <td><a href="/delete/<%= word.idx %>">DELETE</a></input></td>
+    </tr>
+    <% }); %>
+</table>
+<hr/>
+<form action="/create" method="get">
+    <button type="submit">CREATE</button>
+</form>
+<input type="button" value="채팅참여하기" id="gochatting">
+<script src="/socket.io/socket.io.js"></script>
+<script>
+document.getElementById("gochatting").addEventListener("click",function(){
+	//서버소켓연결.
+	var socket = io.connect(window.location.host);
+    socket.on('connected', function (data) {
+        console.log(data);
+        socket.emit('subscribe', {'username':'tegioz', 'rooms':['pruebas']});
+        socket.emit('newMessage', {'room':'pruebas', 'msg':'Holaaaaaa'});
+    });
+    socket.on('newMessage', function (data) {
+        console.log("newMessage: %s", JSON.stringify(data));
+    });
+    setInterval(function() {
+        socket.emit('unsubscribe', {'rooms':['pruebas']});
+        socket.disconnect();
+    }, 600000);
+});
+</script>
+</body>
+</html>
